@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <title>경기도 문화 행사 상세 정보</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+         /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f7f7f7;
+            margin-left: 200px; /* 사이드바 너비만큼 여백 추가 */
+            overflow-x: auto; /* 가로 스크롤 방지 */
+            min-width: calc(100% - 200px); /* 전체 화면에서 사이드바 크기만큼 조정 */
+        }
+
+
+        .content {
+            padding: 20px;
+            margin-left: 8%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .festival-detail {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        .festival-detail img {
+            width: 100%;
+            height: 550px;
+            object-fit: contain;
+            border-radius: 8px;
+
+            display: block;
+            margin: 0 auto;
+        }
+
+        .festival-detail h2 {
+            font-size: 24px;
+            margin: 20px 0;
+            color: #333;
+        }
+
+        .festival-detail p {
+            font-size: 16px;
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007acc;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+
+        .back-btn:hover {
+            background-color: #005fa3;
+        }
+
+        .festival-detail .date-time-info,
+        .festival-detail .host-info {
+            margin-bottom: 15px;
+        }
+
+        .review-section {
+            width: 800px;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-section h2 {
+            text-align: center;
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+
+        #review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .review {
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            align-items: center; /* 중앙 정렬 */
+            text-align: center; /* 내부 텍스트 중앙 정렬 */
+        }
+
+        .review .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+        }
+
+
+        .review .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .review:last-child {
+            border-bottom: none;
+        }
+
+        .review h4 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #007acc;
+        }
+
+        .review p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #555;
+            text-align: center;  /* 내용 텍스트도 가운데 정렬 */
+            width: 100%;
+        }
+        .review small {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .review-form {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .review-form textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .review-form button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #007acc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .review-form button:hover {
+            background: #005fa3;
+        }
+
+        #review-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 전체 중앙 정렬 */
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <a href="/main"><img src="/images/logo.jpg" alt="경기도 로고"></a>
+        </div>
+        <div class="profile">
+            <div class="mypage-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                </svg>
+            </div>
+            <a href="/mypage"><span>마이페이지</span></a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="main">메인페이지</a>
+            <a href="performance">공연행사</a>
+            <a href="education">교육행사</a>
+            <a href="culture">문화행사</a>
+            <a href="exhibition">전시행사</a>
+        </nav>
+        <div class="footer">
+            <img src="/images/banner2.png" alt="변화의 중심, 기회의 경기">
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Navigation -->
+        <header class="top-nav">
+            <nav>
+                <a href="/main">메인페이지</a>
+                <a href="/performance">공연행사</a>
+                <a href="/education">교육행사</a>
+                <a href="/culture">문화행사</a>
+                <a href="/exhibition">전시행사</a>
+                <a href="/customer">고객센터</a>
+            </nav>
+            <div class="auth" id="authSection">
+                <a href="login"><span>로그인 / 회원가입</span></a>
+            </div>
+        </header>
+
+        <!-- Festival Detail -->
+        <section class="content">
+            <div class="festival-detail">
+                <img th:src="${festival.imageUrl}" alt="축제 이미지">
+                <h2 th:text="${festival.title}">축제 제목</h2>
+
+                <div class="date-time-info">
+                    <p><strong>기간:</strong> <span th:text="${festival.beginDe}">행사 시작일</span> ~ <span th:text="${festival.endDe}">행사 종료일</span></p>
+                    <p><strong>운영 시간:</strong> <span th:text="${festival.eventTmInfo}">운영 시간</span></p>
+                </div>
+
+                <div class="host-info">
+                    <p><strong>주최:</strong> <span th:text="${festival.hostInstNm}">주최 기관</span></p>
+                    <p><strong>참가비:</strong> <span th:text="${festival.partcptExpnInfo}">참가비</span></p>
+                    <p><strong>연락처:</strong> <span th:text="${festival.telnoInfo}">연락처 정보</span></p>
+                    <p><strong>행사 공식 홈페이지: </strong><a th:href="${festival.url}" th:text="${festival.url}">URL</a></p>
+
+                </div>
+
+                <div class="review-section">
+                    <h2>후기</h2>
+                    <div id="review-list">
+                        <!-- 리뷰 데이터가 여기에 표시됩니다 -->
+                    </div>
+                    <div class="review-form">
+                        <h3>리뷰 달기</h3>
+                        <form id="add-review-form">
+                            <textarea name="content" placeholder="후기를 작성해주세요!" required></textarea>
+                            <input type="hidden" name="title" th:value="${festival.title}" />
+                            <button type="submit">등록</button>
+                        </form>
+                    </div>
+                </div>
+
+                <button class="back-btn" onclick="window.history.back()">이전 페이지</button>
+
+            </div>
+        </section>
+    </main>
+</div>
+<script>
+    // 특정 축제의 리뷰를 불러오는 함수
+    function loadReviews(title) {
+        fetch(`/reviews/festival?title=${encodeURIComponent(title)}`)   // 서버에서 리뷰 데이터를 가져옴
+            .then((response) => response.json())    //JSON 형식으로 변환
+            .then((data) => {
+                const reviewList = document.getElementById("review-list");  // 리뷰 목록을 표시할 요소 가져오기
+                reviewList.innerHTML = "";          //기존 리뷰 목록 초기화
+                data.forEach((review) => {
+                    const reviewDiv = document.createElement("div");
+                    reviewDiv.className = "review";
+                    const initial = review.username.charAt(0).toUpperCase(); // 유저 첫 글자로 아바타 만들기
+                    reviewDiv.innerHTML = `
+        <div class="avatar">${initial}</div>
+        <div class="content">
+            <h4>${review.username}</h4>
+            <p>${review.content}</p>
+            <small>${new Date(review.createdAt).toLocaleString()}</small>
+        </div>
+    `;
+                    reviewList.appendChild(reviewDiv);
+                });
+            })
+            .catch((error) => {
+                console.error("리뷰 등록에 실패했습니다.", error);     //오류 처리
+            });
+    }
+
+    // 페이지가 로드될 때 실행
+    // URL의 마지막 부분(축제 제목)을 가져와 리뷰를 불러옴
+    document.addEventListener("DOMContentLoaded", function () {
+        const title = decodeURIComponent(window.location.pathname.split("/").pop());
+        loadReviews(title);
+    });
+
+    //리뷰 추가 폼 제출 시 실행
+    document.getElementById("add-review-form").addEventListener("submit", function (event) {
+        event.preventDefault(); //기본 제출 동작 방지
+
+        const formData = new FormData(event.target);    // 폼 데이터 가져오기
+        const data = Object.fromEntries(formData.entries());    // 객체로 변환
+
+        fetch('/reviews/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(data) //데이터를 URL 인코딩하여 전송
+        })
+            .then((response) => response.json())    //JSON 변환
+            .then((result) => {
+                alert(result.message);      // 응답 메시지를 알림창으로 표시
+                loadReviews(data.title);    // 리뷰 목록 다시 불러오기
+            })
+            .catch((error) => {
+                console.error("Error adding review:", error);
+                alert("Failed to add review.");
+            });
+    });
+
+    // check-login 엔드포인트에 요청을 보내 로그인 여부 확인
+    fetch('/check-login')
+        .then(response => response.text())  // 응답을 텍스트로 받기
+        .then(data => {
+            const authSection = document.getElementById("authSection");
+
+            if (data.includes("로그인 상태입니다")) {
+                // 로그인 상태이면 '마이페이지'와 '로그아웃' 버튼 표시
+                authSection.innerHTML = `
+                        <a href="/mypage"><span>마이페이지</span></a>
+                        <a href="/logout"><span>로그아웃</span></a>
+                    `;
+            } else {
+                // 비로그인 상태이면 '로그인 / 회원가입' 표시
+                authSection.innerHTML = `
+                        <a href="login"><span>로그인 / 회원가입</span></a>
+                    `;
+            }
+        })
+        .catch(error => {
+            console.error("오류 발생:", error);
+            document.getElementById("authSection").innerText = "로그인 상태를 확인할 수 없습니다.";
+        });
+</script>
+</body>
+</html>
